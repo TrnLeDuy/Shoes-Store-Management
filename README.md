@@ -1,7 +1,5 @@
 # Shoes-Store-Management
--
-Đồ án Hệ quản trị Cơ sở dữ liệu _ Nhóm 7 
--
+Đồ án Hệ quản trị Cơ sở dữ liệu _ Nhóm 7
 
 THÀNH VIÊN THAM GIA:
 - TRẦN LÊ DUY (Leader)
@@ -9,11 +7,11 @@ THÀNH VIÊN THAM GIA:
 - NGUYỄN HOÀNG KHA
 - PHAN THÀNH TRUNG
 
--
 Công nghệ sử dụng cho đồ án:
 - Front-end : ASP.NET Core Website Application (MVC)
     + Hướng làm đồ án: Database First 
     + Các đối tượng quản lý:
+    
            - Tài khoản người dùng
            - Khách hàng
            - Nhân viên
