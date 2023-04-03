@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 USE master
 GO
 IF EXISTS (SELECT * FROM sys.databases WHERE name = 'shoestoreDB')
@@ -907,6 +906,4 @@ insert into CTPHIEUXUAT(MaPX,MaSP,SoLuongXuat,DonGiaXuat) values ('PX0012','SP00
 																			
  select * from CTPHIEUXUAT
  --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
->>>>>>> TanHiep_workspace
-
 
