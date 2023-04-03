@@ -1,4 +1,4 @@
-﻿USE master
+USE master
 GO
 IF EXISTS (SELECT * FROM sys.databases WHERE name = 'shoestoreDB')
 BEGIN
@@ -135,7 +135,7 @@ CREATE TABLE MATHANGNCC
   MaNCC CHAR(10) NOT NULL,
   SoLuong INT NOT NULL,
   Size INT NOT NULL,
-  PRIMARY KEY (MaSP, MaNCC),
+  PRIMARY KEY (MaSP, MaNCC, Size),
   FOREIGN KEY (MaSP) REFERENCES SANPHAM(MaSP)
 );
 
