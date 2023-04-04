@@ -682,3 +682,20 @@ insert into CTPHIEUXUAT(MaPX,MaSP,SoLuongXuat,DonGiaXuat) values ('PX0012','SP00
  select * from CTPHIEUXUAT
  --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
+insert into HOADON (MaHD, NgayLap, TongTien, MaKH, MaDH,MaNV, MaLoaiHD) values ('HD002','2023/02/24',800000 ,'KH03','DH002','NV02','HDBH')
+insert into HOADON (MaHD, NgayLap, TongTien, MaKH, MaDH,MaNV, MaLoaiHD) values ('HD003','2023/02/28',1000000,'KH04','DH003','NV03','HDBH')
+insert into HOADON (MaHD, NgayLap, TongTien, MaKH, MaDH,MaNV, MaLoaiHD) values ('HD004','2023/03/01',700000 ,'KH02','DH004','NV02','HDBH')
+insert into HOADON (MaHD, NgayLap, TongTien, MaKH, MaDH,MaNV, MaLoaiHD) values ('HD005','2023/03/01',400000 ,'KH06','DH005','NV01','HDBH')
+insert into HOADON (MaHD, NgayLap, TongTien, MaKH, MaDH,MaNV, MaLoaiHD) values ('HD006','2023/03/03',1200000,'KH07','DH006','NV03','HDBH')
+insert into HOADON (MaHD, NgayLap, TongTien, MaKH, MaDH,MaNV, MaLoaiHD) values ('HD007','2023/03/06',500000 ,'KH03','DH007','NV02','HDBH')
+insert into HOADON (MaHD, NgayLap, TongTien, MaKH, MaDH,MaNV, MaLoaiHD) values ('HD008','2023/03/09',600000 ,'KH06','DH008','NV01','HDBH')
+insert into HOADON (MaHD, NgayLap, TongTien, MaKH, MaDH,MaNV, MaLoaiHD) values ('HD009','2023/03/16',1400000,'KH02','DH009','NV02','HDBH')
+insert into HOADON (MaHD, NgayLap, TongTien, MaKH, MaDH,MaNV, MaLoaiHD) values ('HD010','2023/03/22',1700000,'KH08','DH010','NV03','HDBH')
+insert into HOADON (MaHD, NgayLap, TongTien, MaKH, MaDH,MaNV, MaLoaiHD) values ('HD011','2023/03/22',900000 ,'KH10','DH011','NV02','HDBH')
+insert into HOADON (MaHD, NgayLap, TongTien, MaKH, MaDH,MaNV, MaLoaiHD) values ('HD012','2023/03/29',500000 ,'KH07','DH012','NV02','HDBH')
+insert into HOADON (MaHD, NgayLap, TongTien, MaKH, MaDH,MaNV, MaLoaiHD) values ('HD013','2023/04/02',300000 ,'KH09','DH013','NV01','HDBH')
+insert into HOADON (MaHD, NgayLap, TongTien, MaKH, MaDH,MaNV, MaLoaiHD) values ('HD014','2023/04/02',400000 ,'KH05','DH014','NV01','HDBH')
+insert into HOADON (MaHD, NgayLap, TongTien, MaKH, MaDH,MaNV, MaLoaiHD) values ('HD015','2023/04/03',200000 ,'KH01','DH015','NV03','HDBH')
+
+select * from HOADON
+ --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
