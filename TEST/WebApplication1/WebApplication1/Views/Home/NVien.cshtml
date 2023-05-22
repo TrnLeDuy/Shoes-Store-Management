@@ -1,0 +1,11 @@
+﻿@using System.Data
+@{
+    DataTable nhanvienTable = ViewBag.NhanVienData as DataTable;
+}
+
+<select name="MaNV">
+    @foreach (DataRow row in nhanvienTable.Rows)
+    {
+        <option value="@row["MaNV"]">@row["MaNV"]</option>
+    }
+</select>
