@@ -458,19 +458,21 @@ BEGIN
 	DECLARE @tongtien DECIMAL(18,2)
 	SET @tongtien = 0
 	DECLARE @MaPNH CHAR(10)
-    SELECT TOP 1 @MAPNH = MaPNH FROM PHIEUNHAPHANG WHERE MAPNH LIKE 'PM%' AND NgayNhap IS NULL ORDER BY MaPNH ASC
+	Begin transaction
+		SELECT TOP 1 @MAPNH = MaPNH FROM PHIEUNHAPHANG with (XLOCK) WHERE MAPNH LIKE 'PN%' AND NgayNhap IS NULL ORDER BY MaPNH ASC
 
-    IF @MaPNH IS NULL
-    BEGIN
-        DECLARE @lASt_MaPNH CHAR(10)
-        SELECT TOP 1 @lASt_MaPNH = MaPNH FROM PHIEUNHAPHANG WHERE MaPNH LIKE 'PM%' ORDER BY MaPNH DESC
-        DECLARE @next_MaPNH INT
-        SET @next_MaPNH = CAST(RIGHT(@lASt_MaPNH, 8) AS INT) + 1
-        SET @MaPNH = 'PM' + RIGHT('00000000' + CAST(@next_MaPNH AS VARCHAR(8)), 8)
-    END
-	INSERT INTO PHIEUNHAPHANG(MaPNH, NgayNhap, TongTien, MaNV, MaNCC)
-			VALUES (@MaPNH, @ngaynhap, @tongtien, @manv, @mancc);
-			PRINT N'Thêm phiếu nhập hàng thành công';
+		IF @MaPNH IS NULL
+		BEGIN
+		    DECLARE @lASt_MaPNH CHAR(10)
+		    SELECT TOP 1 @lASt_MaPNH = MaPNH FROM PHIEUNHAPHANG WHERE MaPNH LIKE 'PN%' ORDER BY MaPNH DESC
+		    DECLARE @next_MaPNH INT
+		    SET @next_MaPNH = CAST(RIGHT(@lASt_MaPNH, 8) AS INT) + 1
+		    SET @MaPNH = 'PN' + RIGHT('00000000' + CAST(@next_MaPNH AS VARCHAR(8)), 8)
+		END
+		INSERT INTO PHIEUNHAPHANG(MaPNH, NgayNhap, TongTien, MaNV, MaNCC)
+				VALUES (@MaPNH, @ngaynhap, @tongtien, @manv, @mancc);
+				PRINT N'Thêm phiếu nhập hàng thành công';
+	commit
 END;
 
 GO
@@ -580,7 +582,8 @@ CREATE OR ALTER PROC sp_ThemKhachHang
 AS
 BEGIN
     DECLARE @MAKH CHAR(10)
-    SELECT TOP 1 @MAKH = MAKH FROM KHACHHANG WHERE MAKH LIKE 'KH%' AND hoten IS NULL ORDER BY MAKH ASC
+	begin transaction
+    SELECT TOP 1 @MAKH = MAKH FROM KHACHHANG with (XLOCK) WHERE MAKH LIKE 'KH%' AND hoten IS NULL ORDER BY MAKH ASC
 
     IF @MAKH IS NULL
     BEGIN
@@ -593,6 +596,7 @@ BEGIN
 
    INSERT INTO KHACHHANG
 				VALUES (@makh, @hoten, @sdt,@diachi, @email,@ngaysinh,@gioitinh)
+	commit
 END;
 
 GO
@@ -687,24 +691,26 @@ AS
 BEGIN
 	DECLARE @ngaydat DATE, @pptt NVARCHAR(50), @ttdh INT, @tongtien DECIMAL
 	SET @pptt = N'Tiền Mặt'
-	SET @ttdh = 1
+	SET @ttdh = 0
 	SET @tongtien = 0
 	SET @ngaydat = GETDATE()
 	DECLARE @MaDH CHAR(10)
-    SELECT TOP 1 @MADH = MaDH FROM DONHANG WHERE MADH LIKE 'DH%' AND MaKH IS NULL ORDER BY MADH ASC
+	Begin  transaction
+		SELECT TOP 1 @MADH = MaDH FROM DONHANG with (XLOCK) WHERE MADH LIKE 'DH%' AND MaKH IS NULL ORDER BY MADH ASC
 
-    IF @MADH IS NULL
-    BEGIN
-        DECLARE @lASt_MADH CHAR(10)
-        SELECT TOP 1 @lASt_MADH = MADH FROM DONHANG WHERE MADH LIKE 'DH%' ORDER BY MADH DESC
-        DECLARE @next_MADH INT
-        SET @next_MADH = CAST(RIGHT(@lASt_MADH, 8) AS INT) + 1
-        SET @MADH = 'DH' + RIGHT('00000000' + CAST(@next_MADH AS VARCHAR(8)), 8)
-    END
+		IF @MADH IS NULL
+		BEGIN
+		    DECLARE @lASt_MADH CHAR(10)
+		    SELECT TOP 1 @lASt_MADH = MADH FROM DONHANG WHERE MADH LIKE 'DH%' ORDER BY MADH DESC
+		    DECLARE @next_MADH INT
+		    SET @next_MADH = CAST(RIGHT(@lASt_MADH, 8) AS INT) + 1
+		    SET @MADH = 'DH' + RIGHT('00000000' + CAST(@next_MADH AS VARCHAR(8)), 8)
+		END
 
-	INSERT INTO DONHANG VALUES (@MaDH,@ngaydat,@pptt,@ttdh,@tongtien,@makh,@manv)
+		INSERT INTO DONHANG VALUES (@MaDH,@ngaydat,@pptt,@ttdh,@tongtien,@makh,@manv)
+	Commit
 END
-
+exec sp_TaoDonHang 'KH00000001', 'NV00000004'
 GO
 
 CREATE OR ALTER PROC sp_MuaHang
@@ -715,36 +721,46 @@ CREATE OR ALTER PROC sp_MuaHang
 	@gioitinh CHAR(1)
 AS
 BEGIN
-	DECLARE @soluongconlai INT
-	SELECT @soluongconlai = SoLuong
-	FROM KICHCO_SANPHAM
-	WHERE MASP = @mASp and MAKC = (SELECT MaKC FROM KICHCO WHERE LoaiKichCo = @size and GioiTinh = @gioitinh)
-	IF @soluongconlai >= @soluong
-	BEGIN
-		DECLARE @dongia NUMERIC(18,0) ,@tensp NVARCHAR(100), @giatien NUMERIC(18,0)
-		
-		
-		SELECT @giatien= GiaBan FROM BIENDONGGIA WHERE MASP = @mASp
-		SET @dongia = (SELECT GiaBan FROM BIENDONGGIA WHERE MASP = @mASp) * @soluong
-
-		UPDATE DONHANG
-		SET TongTien = TongTien + @dongia
-		WHERE MaDH = @madh
-
-		UPDATE KICHCO_SANPHAM
-		SET SoLuong = Soluong - @soluong
+	BEGIN TRANSACTION;
+	BEGIN TRY
+		DECLARE @soluongconlai INT
+		SELECT @soluongconlai = SoLuong
+		FROM KICHCO_SANPHAM
 		WHERE MASP = @mASp and MAKC = (SELECT MaKC FROM KICHCO WHERE LoaiKichCo = @size and GioiTinh = @gioitinh)
+		IF @soluongconlai >= @soluong
+		BEGIN
+			DECLARE @dongia NUMERIC(18,0) ,@tensp NVARCHAR(100), @giatien NUMERIC(18,0)
+			
+			
+			SELECT @giatien= GiaBan FROM BIENDONGGIA WHERE MASP = @mASp
+			SET @dongia = (SELECT GiaBan FROM BIENDONGGIA WHERE MASP = @mASp) * @soluong
 
-		DECLARE @mASize CHAR(10)
-		SELECT @mASize = MaKC FROM KICHCO WHERE LoaiKichCo = @size and GioiTinh = @gioitinh
+			UPDATE DONHANG
+			SET TongTien = TongTien + @dongia
+			WHERE MaDH = @madh
 
-		INSERT INTO CHITIET_DONHANG VALUES (@madh,@mASp,@mASize,@soluong, @giatien)
-	END;
-	ELSE
+			UPDATE KICHCO_SANPHAM
+			SET SoLuong = Soluong - @soluong
+			WHERE MASP = @mASp and MAKC = (SELECT MaKC FROM KICHCO WHERE LoaiKichCo = @size and GioiTinh = @gioitinh)
+
+			DECLARE @mASize CHAR(10)
+			SELECT @mASize = MaKC FROM KICHCO WHERE LoaiKichCo = @size and GioiTinh = @gioitinh
+
+			INSERT INTO CHITIET_DONHANG VALUES (@madh,@mASp,@mASize,@soluong, @giatien)
+
+			COMMIT;
+		END;
+		ELSE
 		BEGIN
 			RAISERROR(N'Không đủ hàng', 16, 1)
+			ROLLBACK;	
 		END;
-	
+	END TRY
+	BEGIN CATCH
+		IF @@TRANCOUNT > 0
+			ROLLBACK;
+		THROW;
+	END CATCH
 END;
 
 GO
@@ -772,7 +788,7 @@ END
 
 GO
 
-CREATE OR ALTER PROC sp_UPDATECTDONHANG_SoLuong
+CREATE OR ALTER PROCEDURE sp_UPDATECTDONHANG_SoLuong
 	@madh CHAR(10),
 	@mASp CHAR(10),
 	@soluong INT,
@@ -780,60 +796,56 @@ CREATE OR ALTER PROC sp_UPDATECTDONHANG_SoLuong
 	@gioitinh CHAR(1)
 AS
 BEGIN
+		DECLARE @tongtienhientai DECIMAL(18,0)
+		SELECT @tongtienhientai = GiaTien * SoLuong
+		FROM CHITIET_DONHANG
 
-	DECLARE @tongtienhientai DECIMAL(18,0)
-	SELECT @tongtienhientai = GiaTien *SoLuong
-	FROM CHITIET_DONHANG
+		DECLARE @soluonghientai INT
+		SELECT @soluonghientai = SoLuong
+		FROM CHITIET_DONHANG
+		WHERE MASP = @mASp AND MAKC = (SELECT MaKC FROM KICHCO WHERE LoaiKichCo = @size AND GioiTinh = @gioitinh)
 
+		DECLARE @soluongconlai INT
+		SELECT @soluongconlai = SoLuong
+		FROM KICHCO_SANPHAM
+		WHERE MASP = @mASp AND MAKC = (SELECT MaKC FROM KICHCO WHERE LoaiKichCo = @size AND GioiTinh = @gioitinh)
 
-	DECLARE @soluonghientai INT
-	SELECT @soluonghientai = SoLuong
-	FROM CHITIET_DONHANG
-	WHERE MASP = @mASp and MAKC = (SELECT MaKC FROM KICHCO WHERE LoaiKichCo = @size and GioiTinh = @gioitinh)
-
-	DECLARE @soluongconlai INT
-	SELECT @soluongconlai = SoLuong
-	FROM KICHCO_SANPHAM
-	WHERE MASP = @mASp and MAKC = (SELECT MaKC FROM KICHCO WHERE LoaiKichCo = @size and GioiTinh = @gioitinh)
-
-	IF @soluongconlai >= @soluong
-	BEGIN
-		DECLARE @dongia NUMERIC(18,0) ,@giatien NUMERIC(18,0)
-		SELECT @giatien= GiaBan FROM BIENDONGGIA WHERE MASP = @mASp
-		SET @dongia = (SELECT GiaBan FROM BIENDONGGIA WHERE MASP = @mASp) * @soluong
-
-		UPDATE DONHANG
-		SET TongTien = TongTien - @tongtienhientai
-		WHERE MaDH = @madh
-
-		UPDATE DONHANG
-		SET TongTien = TongTien + @dongia
-		WHERE MaDH = @madh
-
-		UPDATE KICHCO_SANPHAM
-		SET SoLuong = Soluong + @soluonghientai
-		WHERE MASP = @mASp and MAKC = (SELECT MaKC FROM KICHCO WHERE LoaiKichCo = @size and GioiTinh = @gioitinh)
-
-		UPDATE KICHCO_SANPHAM
-		SET SoLuong = Soluong - @soluong
-		WHERE MASP = @mASp and MAKC = (SELECT MaKC FROM KICHCO WHERE LoaiKichCo = @size and GioiTinh = @gioitinh)
-
-		DECLARE @mASize CHAR(10)
-		SELECT @mASize = MaKC FROM KICHCO WHERE LoaiKichCo = @size and GioiTinh = @gioitinh
-
-		UPDATE CHITIET_DONHANG
-			SET	SoLuong = @soluong,
-				GiaTien = @dongia
-			WHERE @madh = MaDH and MASP = @mASp and MaKC = @mASize
-
-	END;
-	ELSE
+		IF @soluongconlai >= @soluong
 		BEGIN
-			RAISERROR(N'Không đủ hàng', 16, 1)
-		END;
-	
-END
+			DECLARE @dongia NUMERIC(18,0), @giatien NUMERIC(18,0)
+			SELECT @giatien = GiaBan FROM BIENDONGGIA WHERE MASP = @mASp
+			SET @dongia = (SELECT GiaBan FROM BIENDONGGIA WHERE MASP = @mASp) * @soluong
 
+			UPDATE DONHANG
+			SET TongTien = TongTien - @tongtienhientai
+			WHERE MaDH = @madh
+
+			UPDATE DONHANG
+			SET TongTien = TongTien + @dongia
+			WHERE MaDH = @madh
+
+			UPDATE KICHCO_SANPHAM
+			SET SoLuong = Soluong + @soluonghientai
+			WHERE MASP = @mASp AND MAKC = (SELECT MaKC FROM KICHCO WHERE LoaiKichCo = @size AND GioiTinh = @gioitinh)
+
+			UPDATE KICHCO_SANPHAM
+			SET SoLuong = Soluong - @soluong
+			WHERE MASP = @mASp AND MAKC = (SELECT MaKC FROM KICHCO WHERE LoaiKichCo = @size AND GioiTinh = @gioitinh)
+
+			DECLARE @mASize CHAR(10)
+			SELECT @mASize = MaKC FROM KICHCO WHERE LoaiKichCo = @size AND GioiTinh = @gioitinh
+
+			UPDATE CHITIET_DONHANG
+			SET SoLuong = @soluong,
+				GiaTien = @giatien
+			WHERE MaDH = @madh AND MASP = @mASp AND MaKC = @mASize
+		END;
+		ELSE
+		BEGIN
+			RAISERROR(N'Không đủ hàng', 16, 1);
+		END;
+END;
+exec sp_updateCTDONHANG_SoLuong 'DH00000006','SP00000001',1,44,'M'
 GO
 
 CREATE OR ALTER PROC sp_TimKiem_KhachHang
@@ -864,7 +876,7 @@ END;
 
 GO
 
-CREATE OR ALTER PROC sp_NhapHang
+CREATE OR ALTER PROCEDURE sp_NhapHang
 	@mapnh CHAR(10),
 	@mASp CHAR(10),
 	@soluong INT,
@@ -873,10 +885,9 @@ CREATE OR ALTER PROC sp_NhapHang
 	@tinhtrang INT
 AS
 BEGIN
-
 		DECLARE @dongia NUMERIC(18,0), @giatien NUMERIC(18,0)
 		
-		SELECT @giatien= GiaBan FROM BIENDONGGIA WHERE MASP = @mASp
+		SELECT @giatien = GiaBan FROM BIENDONGGIA WHERE MASP = @mASp
 		SET @dongia = (SELECT GiaBan FROM BIENDONGGIA WHERE MASP = @mASp) * @soluong
 
 		UPDATE PHIEUNHAPHANG
@@ -885,15 +896,15 @@ BEGIN
 
 		UPDATE KICHCO_SANPHAM
 		SET SoLuong = Soluong + @soluong
-		WHERE MASP = @mASp and MAKC = (SELECT MaKC FROM KICHCO WHERE LoaiKichCo = @size and GioiTinh = @gioitinh)
+		WHERE MASP = @mASp AND MAKC = (SELECT MaKC FROM KICHCO WHERE LoaiKichCo = @size AND GioiTinh = @gioitinh)
 
 		DECLARE @mASize CHAR(10)
-		SELECT @mASize = MaKC FROM KICHCO WHERE LoaiKichCo = @size and GioiTinh = @gioitinh
+		SELECT @mASize = MaKC FROM KICHCO WHERE LoaiKichCo = @size AND GioiTinh = @gioitinh
 
-		INSERT INTO CHITIET_PHIEUNHAP VALUES (@mapnh,@mASp,@mASize,@soluong, @giatien,@tinhtrang)
-	
+		INSERT INTO CHITIET_PHIEUNHAP VALUES (@mapnh, @mASp, @mASize, @soluong, @giatien, @tinhtrang)
 END;
-
+exec sp_ThemPhieuNhapHang '2023-05-19','NV00000004','NCC0000006'
+exec sp_Nhaphang 'PN00000008','SP00000001',10,37,'M',1
 GO
 
 CREATE OR ALTER PROC sp_UPDATECTPhieuNhap_SoLuong
