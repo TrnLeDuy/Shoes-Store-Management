@@ -13,7 +13,7 @@ namespace WebApplication1.Models.KhachHangModel
     {
         public sp_ThemKH()
         { }
-        string connectionString = "data source=192.168.111.170,1433;initial catalog=fashionDatabase;persist security info=True;user id=sa;password=Kha019283;";
+        string connectionString = "data source=192.168.1.11,1433;initial catalog=fashionDatabase;persist security info=True;user id=sa;password=Kha019283;";
 
         public void ThemKhachHang(ThemKhachHang model)
         {
