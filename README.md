@@ -8,7 +8,7 @@ THÀNH VIÊN THAM GIA:
 - PHAN THÀNH TRUNG
 
 Công nghệ sử dụng cho đồ án:
-- Front-end : ASP.NET Core Website Application (MVC)
+- Front-end : ASP.NET Website Application (MVC)
     + Hướng làm đồ án: Database First 
     + Các đối tượng quản lý:
     
@@ -23,3 +23,7 @@ Công nghệ sử dụng cho đồ án:
            - Nhà cung cấp
            - Phiếu xuất
 - Back-end: Microsoft SQL Management 2019 (SQL)
+
+
+Relationship Diagram
+![image](https://github.com/TrnLeDuy/Shoes-Store-Management/assets/115848214/4e55b81f-11f5-40ac-b4a9-71e9903dd610)
