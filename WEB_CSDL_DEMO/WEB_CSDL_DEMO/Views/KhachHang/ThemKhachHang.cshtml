@@ -1,0 +1,55 @@
+﻿@model WEB_CSDL_DEMO.Models.KhachHangModel.KhachHang
+@{
+    ViewBag.Title = "ThemKhachHang";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<form action="~/KhachHang/ThemKhachHang">
+    <h3>Thêm Khách Hàng</h3>
+    <div class="form-wrapper">
+        <div class="col-md-5">Họ và tên:</div>
+        <div class="col-md-10">
+            <input class="form-control1" type="text" name="HoTen" />
+        </div>
+    </div>
+
+    <div class="form-wrapper">
+        <div class="col-md-5">Số điện thoại</div>
+        <div class="col-md-10">
+            <input class="form-control1" type="text" name="SDT" />
+        </div>
+    </div>
+
+    <div class="form-wrapper">
+        <div class="col-md-5">Địa chỉ</div>
+        <div class="col-md-10">
+            <input class="form-control1" type="text" name="DiaChi" />
+        </div>
+    </div>
+
+    <div class="form-wrapper">
+        <div class="col-md-5">Email</div>
+        <div class="col-md-10">
+            <input class="form-control1" type="text" name="Email" />
+        </div>
+    </div>
+
+    <div class="form-wrapper">
+        <div class="col-md-5">Ngày Sinh</div>
+        <div class="col-md-10">
+            <input class="form-control1" type="datetime" name="NgaySinh" />
+        </div>
+    </div>
+
+    <div class="form-wrapper">
+        <div class="col-md-5">Giới tính</div>
+        <div class="col-md-10">
+            <select name="GioiTinh">
+                <option value="M">Nam</option>
+                <option value="F">Nữ</option>
+            </select>
+        </div>
+    </div>
+    <button class="btn btn-success button1">Xác nhận</button>
+</form>
+

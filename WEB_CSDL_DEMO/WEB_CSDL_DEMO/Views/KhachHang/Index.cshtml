@@ -1,0 +1,102 @@
+﻿@model IEnumerable<WEB_CSDL_DEMO.Models.V_KHACHHANG_DS>
+
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+
+    .delete-button {
+        background-color: red;
+        color: white;
+        padding: 10px 20px;
+        border-radius: 5px;
+        border: none;
+        text-decoration: none;
+    }
+
+    .edit-button {
+        background-color: green;
+        color: white;
+        padding: 10px 20px;
+        border-radius: 5px;
+        border: none;
+        text-decoration: none;
+    }
+</style>
+
+<div class="row mt-4">
+    <div class="col-6">
+        @Html.ActionLink("Thêm Khách hàng mới", "ThemKhachHang", null, new { @class = "btn btn-primary" })
+    </div>
+    <div class="col-6">
+        <form style="width: 100%; padding-left: 250px;" action="" method="get">
+            <div class="form-group">
+                <input class="form-control" id="search" type="text" name="search" placeholder="Tìm kiếm Khách Hàng" value="" />
+            </div>
+        </form>
+    </div>
+    <table class="table">
+        <tr>
+            <th>
+                Mã Khách Hàng
+            </th>
+            <th>
+                Họ tên
+            </th>
+            <th>
+                Số điện thoại
+            </th>
+            <th>
+                Email
+            </th>
+            <th>
+                Địa chỉ nhà
+            </th>
+            @if (Session["Role"] != null && Session["Role"].ToString() == "QTV       ")
+            {
+                <th></th>
+            }  
+        </tr>
+
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    <a style="text-decoration: none; color: black;" href="~/TaiKhoans/Details?id=@item.MaKH">
+                        @Html.DisplayFor(modelItem => item.MaKH)
+                    </a>
+                </td>
+                <td>
+                    <a style="text-decoration: none; color: black;" href="~/TaiKhoans/Details?id=@item.MaKH">
+                        @Html.DisplayFor(modelItem => item.HoTen)
+                    </a>
+                </td>
+                <td>
+                    <a style="text-decoration: none; color: black;" href="~/TaiKhoans/Details?id=@item.MaKH">
+                        @Html.DisplayFor(modelItem => item.SDT)
+                    </a>
+                </td>
+                <td>
+                    <a style="text-decoration: none; color: black;" href="~/TaiKhoans/Details?id=@item.MaKH">
+                        @Html.DisplayFor(modelItem => item.Email)
+                    </a>
+                </td>
+                <td>
+                    <a style="text-decoration: none; color: black;" href="~/TaiKhoans/Details?id=@item.MaKH">
+                        @Html.DisplayFor(modelItem => item.DiaChi)
+                    </a>
+                </td>
+                @if (Session["Role"] != null && Session["Role"].ToString() == "QTV       ")
+                {
+                    <td>
+                        <a class="edit-button fa fa-pencil" href="~/KhachHang/Edit?id=@item.MaKH"></a>
+                        <a class="delete-button fa fa-trash" href="~/TaiKhoans/Delete?id=@item.MaKH"></a>
+                    </td>
+                }
+            </tr>
+        }
+
+    </table>
+</div>
